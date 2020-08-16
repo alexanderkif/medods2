@@ -160,7 +160,7 @@ $opacity: 0.4
 	.level,
 	.start-button
 		width: fit-content
-		margin: 2rem auto
+		margin: 1rem auto
 
 	input
 		margin-bottom: 1rem
@@ -169,8 +169,8 @@ $opacity: 0.4
 		color: green
 		text-align: center
 		font-size: 1.3rem
-		height: 3rem
-		margin-top: 2rem
+		height: 2rem
+		margin-top: 1rem
 
 	
 	.game-over
@@ -189,11 +189,11 @@ $opacity: 0.4
 		color: #55aa55
 
 .row
-	height: 10rem
+	height: 8rem
 
 	.col
-		width: 10rem
-		height: 10rem
+		width: 8rem
+		height: 8rem
 		display: inline-block
 
 	.blue,
