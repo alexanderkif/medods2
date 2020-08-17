@@ -2,12 +2,12 @@
 	<div>
 		<div class="game">
 			<div class="row">
-				<div class="col blue" @click.prevent="checkChain(1)"></div>
-				<div class="col red" @click.prevent="checkChain(2)"></div>
+				<div class="col blue" ref="blue" @click.prevent="checkChain(1)"></div>
+				<div class="col red" ref="red" @click.prevent="checkChain(2)"></div>
 			</div>
 			<div class="row">
-				<div class="col yellow" @click.prevent="checkChain(3)"></div>
-				<div class="col green" @click.prevent="checkChain(4)"></div>
+				<div class="col yellow" ref="yellow" @click.prevent="checkChain(3)"></div>
+				<div class="col green" ref="green" @click.prevent="checkChain(4)"></div>
 			</div>
 		</div>
 		<div class="options">
@@ -47,12 +47,6 @@ export default {
 			round: 1
     }
 	},
-	mounted() {
-		this.blue = document.querySelector('.blue')
-		this.red = document.querySelector('.red')
-		this.yellow = document.querySelector('.yellow')
-		this.green = document.querySelector('.green')
-	},
   methods: {
 		startGame() {
 			this.isGame = true
@@ -78,16 +72,16 @@ export default {
 			this.playSound(val)
 			switch (val) {
 				case 1:
-					this.opacityElement(this.blue)
+					this.opacityElement(this.$refs.blue)
 					break;
 				case 2:
-					this.opacityElement(this.red)
+					this.opacityElement(this.$refs.red)
 					break;
 				case 3:
-					this.opacityElement(this.yellow)
+					this.opacityElement(this.$refs.yellow)
 					break;
 				case 4:
-					this.opacityElement(this.green)
+					this.opacityElement(this.$refs.green)
 					break;
 				default:
 					break;
