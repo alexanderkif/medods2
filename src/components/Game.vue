@@ -1,31 +1,39 @@
 <template>
 	<div>
 		<div class="game">
-			<div class="row">
-				<div class="col blue" ref="blue" @click.prevent="checkChain(1)"></div>
-				<div class="col red" ref="red" @click.prevent="checkChain(2)"></div>
-			</div>
-			<div class="row">
-				<div class="col yellow" ref="yellow" @click.prevent="checkChain(3)"></div>
-				<div class="col green" ref="green" @click.prevent="checkChain(4)"></div>
-			</div>
+			<ColorArea
+				:class="nine ? 'game__area game__area_nine' : 'game__area'"
+				v-for="(color, index) in colors"
+				:key="index"
+				:indx="index+1"
+				:color="color"
+			/>
 		</div>
 		<div class="options">
-			<div :class="`status ${isGame?'':'game-over'}`">{{ status }}</div>
-			<div :class="`${listenUser?'listen':'repeat'}`">
+			<div :class="`options__status ${isGame?'':'options__status_game-over'}`">{{ status }}</div>
+			<div :class="`${listenUser?'options__listen':'options__repeat'}`">
 				{{ isGame ? listenUser ? 'Повторяем' : 'Слушаем' : '' }}
 			</div>
-			<div class="level">
-				<input type="radio" :value="1500" v-model="level">
-				<label>Легкий</label>
-				<br>
-				<input type="radio" :value="1000" v-model="level">
-				<label>Средний</label>
-				<br>
-				<input type="radio" :value="400" v-model="level">
-				<label>Сложный</label>
+			<div class="options__level">
+				<div>
+					<input class="options__input" type="radio" :value="1500" v-model="level">
+					<label>Легкий</label>
+				</div>
+				<div>
+					<input class="options__input" type="radio" :value="1000" v-model="level">
+					<label>Средний</label>
+				</div>
+				<div>
+					<input class="options__input" type="radio" :value="400" v-model="level">
+					<label>Сложный</label>
+				</div>
 			</div>
-			<div class="start-button">
+			<div class="options__toggle-nine">
+				<button :disabled="isGame" @click="nine=!nine">
+					{{ nine ? 'Верни четыре!' : 'Дай девять!'}}
+				</button>
+			</div>
+			<div class="options__start-button">
 				<button :disabled="isGame" @click.prevent="startGame()">Начать игру</button>
 			</div>
 		</div>
@@ -33,8 +41,13 @@
 </template>
 
 <script>
+import ColorArea from './ColorArea'
+
 export default {
 	name: 'Game',
+	components: {
+		ColorArea
+	},
   data() {
     return {
 			level: 1500,
@@ -44,8 +57,15 @@ export default {
 			listenUser: false,
 			currentStep: 0,
 			timer: {},
-			round: 1
+			round: 1,
+			nine: false
     }
+	},
+	created() {
+		this.$root.$on('clickColorArea', this.checkChain)
+	},
+	beforeDestroy() {
+		this.$root.$off('clickColorArea', this.checkChain)
 	},
   methods: {
 		startGame() {
@@ -58,39 +78,18 @@ export default {
 			this.status = `Раунд ${this.round}`
 			this.currentStep = 0
 			this.addRandomNumber()
-			this.listenUser = false
+			this.setListenUser(false)
 			this.playChain(this.chain)
 		},
 		stopGame() {
 			this.isGame = false
 			this.chain = []
 			this.currentStep = 0
-			this.listenUser = false
-		},
-		pushButton(val) {
-			if (!this.isGame) { return }
-			this.playSound(val)
-			switch (val) {
-				case 1:
-					this.opacityElement(this.$refs.blue)
-					break;
-				case 2:
-					this.opacityElement(this.$refs.red)
-					break;
-				case 3:
-					this.opacityElement(this.$refs.yellow)
-					break;
-				case 4:
-					this.opacityElement(this.$refs.green)
-					break;
-				default:
-					break;
-			}
+			this.setListenUser(false)
 		},
 		checkChain(val) {
 			if (!this.listenUser) { return }
 			clearTimeout(this.timer)
-			this.pushButton(val)
 			if (this.chain[this.currentStep] !== val) {
 				this.stopGame()
 				this.status = 'Ошибка'
@@ -111,108 +110,88 @@ export default {
 		},
 		playChain(chain) {
 			if (!chain.length) {
-				this.listenUser = true
+				this.setListenUser(true)
 				return
 			}
 			setTimeout(() => {
 				this.playChain(chain.slice(1))
 			}, this.level)
-			this.pushButton(chain[0])
+			this.$root.$emit('playChain', chain[0] )
+		},
+		setListenUser(boo) {
+			this.listenUser = boo
+			this.$root.$emit('listenUser', boo)
 		},
 		addRandomNumber() {
-			this.chain.push(this.randomInteger(1,4))
+			this.chain.push(this.randomInteger(1, this.nine ? 9 : 4))
 		},
 		randomInteger(min, max) {
 			let rand = min + Math.random() * (max + 1 - min);
 			return Math.floor(rand);
-		},
-		playSound(val) {
-			const audio = new Audio(`sound/${val}.mp3`)
-			audio.play()
-		},
-		opacityElement(el) {
-			el.classList.add('active')
-			setTimeout(() => {
-				el.classList.remove('active')
-			}, 200)
 		}
-  }
+	},
+	computed: {
+		colors() {
+			return this.nine ?
+			['blue', 'red', 'green', 'orange', 'violet', 'yellow', 'lightgreen', 'coral', 'indigo'] :
+			['blue', 'red', 'green', 'orange']
+		}
+	}
 }
 </script>
 
 <style lang="sass" >
-$blue: blue
-$red: red
-$yellow: yellow
-$green: green
-$radius: 1rem
+$radius: 5rem
 $opacity: 0.4
 
 .options
 	width: 10rem
 
-	.level,
-	.start-button
+	&__toggle-nine,
+	&__level,
+	&__start-button
 		width: fit-content
 		margin: 1rem auto
 
-	input
+	&__input
 		margin-bottom: 1rem
 
-	.status
-		color: green
+	&__status
+		color: blue
 		text-align: center
 		font-size: 1.3rem
 		height: 2rem
-		margin-top: 1rem
+		margin: 0.5rem 0
 
-	
-	.game-over
-		color: red
+		&_game-over
+			color: red
 
-	.listen,
-	.repeat
+	&__listen,
+	&__repeat
 		text-align: center
 		font-size: 1rem
 		height: 2rem
 
-	.listen
-		color: #aa5555
+	&__listen
+		color: lightgreen
 
-	.repeat
-		color: #55aa55
+	&__repeat
+		color: red
 
-.row
-	height: 8rem
+.game
+	border-radius: 3rem
+	border: 0
+	overflow: hidden
+	display: flex
+	flex-wrap: wrap
+	width: 18rem
 
-	.col
-		width: 8rem
-		height: 8rem
-		display: inline-block
+	&__area
+		width: 9rem
+		height: 9rem
 
-	.blue,
-	.red,
-	.yellow,
-	.green
-		opacity: $opacity
-
-	.active
-		opacity: 1
-
-	.blue
-		background-color: $blue
-		border-radius: $radius 0 0 0
-
-	.red
-		background-color: $red
-		border-radius: 0 $radius 0 0
-
-	.yellow
-		background-color: $yellow
-		border-radius: 0 0 0 $radius
-
-	.green
-		background-color: $green
-		border-radius: 0 0 $radius 0
+		&_nine
+			width: 6rem
+			height: 6rem
 
 </style>
