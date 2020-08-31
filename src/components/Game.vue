@@ -115,7 +115,7 @@ export default {
 			}
 			setTimeout(() => {
 				this.playChain(chain.slice(1))
-			}, this.level)
+			}, this.level > 700 ? 700 : this.level)
 			this.$root.$emit('playChain', chain[0] )
 		},
 		setListenUser(boo) {
