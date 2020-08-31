@@ -5,17 +5,10 @@
       {{ isGame ? listenUser ? 'Повторяем' : 'Слушаем' : '' }}
     </div>
     <div class="options__level">
-      <div>
-        <input class="options__input" type="radio" :value="1500" v-model="level" @change="$emit('change-level', level)">
-        <label>Легкий</label>
-      </div>
-      <div>
-        <input class="options__input" type="radio" :value="1000" v-model="level" @change="$emit('change-level', level)">
-        <label>Средний</label>
-      </div>
-      <div>
-        <input class="options__input" type="radio" :value="400" v-model="level" @change="$emit('change-level', level)">
-        <label>Сложный</label>
+      <div v-for="lev in $options.levels" :key="lev.index" >
+        <input class="options__input" type="radio" :value="lev.wait" v-model="level"
+          @change="$emit('change-level', level)">
+        <label>{{ lev.title }}</label>
       </div>
     </div>
     <div class="options__toggle-nine">
@@ -37,6 +30,11 @@ export default {
     isGame: Boolean,
     status: String
   },
+  levels: [
+    { title: 'Легкий', wait: 1500 },
+    { title: 'Средний', wait: 1000 },
+    { title: 'Сложный', wait: 400 }
+  ],
   data() {
     return {
       level: 1500,
