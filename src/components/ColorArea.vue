@@ -14,18 +14,7 @@ export default {
     color: String,
     listenUser: Boolean
   },
-	created() {
-		this.$root.$on('playChain', this.playChain)
-	},
-	beforeDestroy() {
-		this.$root.$off('playChain', this.playChain)
-	},
   methods: {
-    playChain(indx) {
-      if (indx === this.indx) {
-        this.pushColorArea()
-      }
-    },
 		clickColorArea() {
 			if (!this.listenUser) { return }
       this.$emit('clickColorArea', this.indx )

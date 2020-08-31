@@ -43,6 +43,9 @@ export default {
       nine: false
     }
   },
+  created() {
+    this.$emit('change-level', this.level)
+  },
   methods: {
     clickNine () {
       this.nine = !this.nine

@@ -2,10 +2,11 @@
 	<div>
 		<div class="game">
 			<ColorArea
+				ref="colorArea"
 				:class="nine ? 'game__area game__area_nine' : 'game__area'"
 				v-for="(color, index) in colors"
 				:key="index"
-				:indx="index+1"
+				:indx="index + 1"
 				:color="color"
 				@clickColorArea="checkChain"
 				:listenUser="listenUser"
@@ -34,7 +35,7 @@ export default {
 	},
   data() {
     return {
-			level: 1500,
+			level: 0,
 			isGame: false,
 			chain: [],
 			status: '',
@@ -94,7 +95,7 @@ export default {
 			setTimeout(() => {
 				this.playChain(chain.slice(1))
 			}, this.level > 700 ? 700 : this.level)
-			this.$root.$emit('playChain', chain[0] )
+			this.$refs.colorArea[chain[0]-1].pushColorArea()
 		},
 		addRandomNumber() {
 			this.chain.push(this.randomInteger(1, this.nine ? 9 : 4))
