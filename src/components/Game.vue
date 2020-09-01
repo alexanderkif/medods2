@@ -8,7 +8,7 @@
 				:indx="index + 1"
 				:listenUser="listenUser"
 				:color="color"
-				:class="`game__area ${nine ? 'game__area_nine' : ''}`"
+				:class="`game__area ${optObj.nine ? 'game__area_nine' : ''}`"
 				@clickColorArea="checkChain"
 			/>
 		</div>
@@ -16,10 +16,8 @@
 			:listenUser="listenUser"
 			:isGame="isGame"
 			:status="status"
-			:level="level"
+			:optObj="optObj"
 			@start-game="startGame"
-			@change-level="lev=>level=lev"
-			@click-nine="nin=>nine=nin"
 		/>
 	</div>
 </template>
@@ -36,7 +34,6 @@ export default {
 	},
   data() {
     return {
-			level: 1500,
 			isGame: false,
 			chain: [],
 			status: '',
@@ -44,7 +41,10 @@ export default {
 			currentStep: 0,
 			timer: {},
 			round: 1,
-			nine: false
+			optObj: {
+				nine: false,
+				level: 1500
+			}
     }
 	},
   methods: {
@@ -77,11 +77,12 @@ export default {
 			}
 			if (this.chain.length - 1 === this.currentStep) {
 				this.round++
-				this.timer = setTimeout(() => this.nextRound(), this.level < 1000 ? 1000 : this.level)
+				this.timer = setTimeout(() => this.nextRound(),
+					this.optObj.level < 1000 ? 1000 : this.optObj.level)
 				return false
 			}
 			this.currentStep++
-			this.timer = setTimeout(() => this.stopGame('Таймаут'), this.level)
+			this.timer = setTimeout(() => this.stopGame('Таймаут'), this.optObj.level)
 		},
 		playChain(chain) {
 			if (!chain.length) {
@@ -90,11 +91,11 @@ export default {
 			}
 			setTimeout(() => {
 				this.playChain(chain.slice(1))
-			}, this.level > 700 ? 700 : this.level)
+			}, this.optObj.level > 700 ? 700 : this.optObj.level)
 			this.$refs.colorArea[chain[0]-1].pushColorArea()
 		},
 		addRandomNumber() {
-			this.chain.push(this.randomInteger(1, this.nine ? 9 : 4))
+			this.chain.push(this.randomInteger(1, this.optObj.nine ? 9 : 4))
 		},
 		randomInteger(min, max) {
 			let rand = min + Math.random() * (max + 1 - min);
@@ -103,7 +104,7 @@ export default {
 	},
 	computed: {
 		colors() {
-			return this.nine ?
+			return this.optObj.nine ?
 			['blue', 'red', 'green', 'orange', 'violet', 'yellow', 'lightgreen', 'coral', 'indigo'] :
 			['blue', 'red', 'green', 'orange']
 		}

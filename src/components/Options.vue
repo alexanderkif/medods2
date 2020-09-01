@@ -8,15 +8,15 @@
       <div
         v-for="lev in $options.levels"
         :key="lev.index"
-        @click="$emit('change-level', lev.wait)"
+        @click="optObj.level = lev.wait"
       >
-        <input class="options__input" type="radio" :value="lev.wait" v-model="level">
+        <input class="options__input" type="radio" :value="lev.wait" v-model="optObj.level">
         <label>{{ lev.title }}</label>
       </div>
     </div>
     <div class="options__toggle-nine">
-      <button :disabled="isGame" @click="clickNine">
-        {{ nine ? 'Верни четыре!' : 'Дай девять!'}}
+      <button :disabled="isGame" @click="optObj.nine=!optObj.nine">
+        {{ optObj.nine ? 'Верни четыре!' : 'Дай девять!'}}
       </button>
     </div>
     <div class="options__start-button">
@@ -32,24 +32,17 @@ export default {
     listenUser: Boolean,
     isGame: Boolean,
     level: Number,
-    status: String
+    status: String,
+    optObj: {
+      nine: Boolean,
+      level: Number
+    }
   },
   levels: [
     { title: 'Легкий', wait: 1500 },
     { title: 'Средний', wait: 1000 },
     { title: 'Сложный', wait: 400 }
-  ],
-  data() {
-    return {
-      nine: false
-    }
-  },
-  methods: {
-    clickNine () {
-      this.nine = !this.nine
-      this.$emit('click-nine', this.nine)
-    }
-  }
+  ]
 }
 </script>
 
