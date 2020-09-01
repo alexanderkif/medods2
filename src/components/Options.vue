@@ -5,9 +5,12 @@
       {{ isGame ? listenUser ? 'Повторяем' : 'Слушаем' : '' }}
     </div>
     <div class="options__level">
-      <div v-for="lev in $options.levels" :key="lev.index" >
-        <input class="options__input" type="radio" :value="lev.wait" v-model="level"
-          @change="$emit('change-level', level)">
+      <div
+        v-for="lev in $options.levels"
+        :key="lev.index"
+        @click="$emit('change-level', lev.wait)"
+      >
+        <input class="options__input" type="radio" :value="lev.wait" v-model="level">
         <label>{{ lev.title }}</label>
       </div>
     </div>
@@ -28,6 +31,7 @@ export default {
   props: {
     listenUser: Boolean,
     isGame: Boolean,
+    level: Number,
     status: String
   },
   levels: [
@@ -37,12 +41,8 @@ export default {
   ],
   data() {
     return {
-      level: 1500,
       nine: false
     }
-  },
-  created() {
-    this.$emit('change-level', this.level)
   },
   methods: {
     clickNine () {

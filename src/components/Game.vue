@@ -3,19 +3,20 @@
 		<div class="game">
 			<ColorArea
 				ref="colorArea"
-				:class="nine ? 'game__area game__area_nine' : 'game__area'"
 				v-for="(color, index) in colors"
 				:key="index"
 				:indx="index + 1"
-				:color="color"
-				@clickColorArea="checkChain"
 				:listenUser="listenUser"
+				:color="color"
+				:class="`game__area ${nine ? 'game__area_nine' : ''}`"
+				@clickColorArea="checkChain"
 			/>
 		</div>
 		<Options
 			:listenUser="listenUser"
 			:isGame="isGame"
 			:status="status"
+			:level="level"
 			@start-game="startGame"
 			@change-level="lev=>level=lev"
 			@click-nine="nin=>nine=nin"
@@ -35,7 +36,7 @@ export default {
 	},
   data() {
     return {
-			level: 0,
+			level: 1500,
 			isGame: false,
 			chain: [],
 			status: '',
@@ -60,32 +61,27 @@ export default {
 			this.listenUser = false
 			this.playChain(this.chain)
 		},
-		stopGame() {
+		stopGame(status) {
 			this.isGame = false
+			this.status = status
 			this.chain = []
 			this.currentStep = 0
 			this.listenUser = false
 		},
 		checkChain(val) {
-			if (!this.listenUser) { return }
+			if (!this.listenUser) { return false }
 			clearTimeout(this.timer)
 			if (this.chain[this.currentStep] !== val) {
-				this.stopGame()
-				this.status = 'Ошибка'
+				this.stopGame('Ошибка')
 				return false
 			}
 			if (this.chain.length - 1 === this.currentStep) {
 				this.round++
-				this.timer = setTimeout(() => {
-					this.nextRound()
-				}, this.level)
+				this.timer = setTimeout(() => this.nextRound(), this.level < 1000 ? 1000 : this.level)
 				return false
 			}
 			this.currentStep++
-			this.timer = setTimeout(() => {
-				this.stopGame()
-				this.status = 'Таймаут'
-			}, this.level)
+			this.timer = setTimeout(() => this.stopGame('Таймаут'), this.level)
 		},
 		playChain(chain) {
 			if (!chain.length) {
